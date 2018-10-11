@@ -37,20 +37,28 @@ merge 1:m date using dayMoYr
 l date if _merge==1
 ta date if _merge==2
 
-drop if _merge==1
+drop if _merge==2
+sort booid
+drop if booid==booid[_n-1]
 drop _merge
 
 save goodreadsholidaymerge, replace 
 
 
-use https://github.com/rachelwagner/ps3-merge-5/raw/master/br350sample.dta, clear
-
-use https://github.com/rachelwagner/ps3-merge-5/raw/master/BXRatingsDestrSample.dta, clear //has isbn
-rename isbn isbn13
-merge m:1 isbn13 using goodreadsholidaymerge // it said try to force?? 
 
 use https://github.com/rachelwagner/ps3-merge-5/raw/master/ratingsgoodbooksample.dta, clear
 rename book_id booid
+cap drop _merge
+
 merge m:1 booid using goodreadsholidaymerge
 //merge on booid or isbn 
+
+save goodreadsholidaybooidmerge, replace 
+
+use goodreadsholidaymerge, clear
+sort booid
+count if booid==booid[_n-1]
+l  if booid==booid[_n-1]
+drop if booid==5 & v1==.
+
 
